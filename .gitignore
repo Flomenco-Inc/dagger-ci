@@ -29,3 +29,6 @@ go.work.sum
 
 # Local dagger cache
 .dagger/
+/internal/querybuilder
+/internal/telemetry
+/.env
