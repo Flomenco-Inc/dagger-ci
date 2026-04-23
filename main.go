@@ -117,11 +117,27 @@ func (m *DaggerCi) PreCommit(
 		terraformDocsVersion = defaultTerraformDocsVersion
 	}
 
+	// pre-commit needs a `.git` directory to resolve file lists. We handle two
+	// callers:
+	//
+	//   1. CI via actions/checkout@v5 — `.git` is already present, working tree
+	//      is clean. `git init` is a no-op, `git add -A` stages nothing, and
+	//      `git commit` would exit 1 with "nothing to commit" unless we pass
+	//      `--allow-empty`. So we use `--allow-empty` to keep the invariant
+	//      "HEAD exists after this block" regardless of caller state.
+	//
+	//   2. Local `dagger call pre-commit --src=.` against a scratch dir with no
+	//      git history — `git init` creates the repo, `git add -A` stages the
+	//      files, and `git commit` creates the initial commit (non-empty, so
+	//      `--allow-empty` is a harmless pass-through).
+	//
+	// The snapshot commit ensures pre-commit's "changed files" logic sees the
+	// full working tree as under-test; `--all-files` then covers everything.
 	return m.preCommitBase(src, tfVersion, tflintVersion, terraformDocsVersion).
 		WithExec([]string{"sh", "-c", "set -eux; " +
 			"git init -q -b main && " +
 			"git add -A && " +
-			"git -c user.email=ci@flo -c user.name=ci commit -q -m 'ci snapshot' && " +
+			"git -c user.email=ci@flo -c user.name=ci commit -q --allow-empty -m 'ci snapshot' && " +
 			"pre-commit run --all-files --show-diff-on-failure"}).
 		Stdout(ctx)
 }
