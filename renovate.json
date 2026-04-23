@@ -1,0 +1,43 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":dependencyDashboard",
+    ":separateMajorReleases"
+  ],
+  "labels": ["dependencies"],
+  "timezone": "America/Los_Angeles",
+  "schedule": ["before 5am on monday"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "packageRules": [
+    {
+      "description": "Group all GitHub Actions bumps into a single weekly PR",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "Group Go module bumps (Dagger SDK + transitives)",
+      "matchManagers": ["gomod"],
+      "groupName": "go modules"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track tool versions pinned as Go consts in main.go (Terraform, TFLint, terraform-docs, Checkov, Python)",
+      "managerFilePatterns": ["main.go"],
+      "matchStrings": [
+        "default(?<depNameCamel>Terraform|TFLint|TerraformDocs|Checkov|Python)Version\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "{{#if (equals depNameCamel 'Terraform')}}github-releases{{else if (equals depNameCamel 'TFLint')}}github-releases{{else if (equals depNameCamel 'TerraformDocs')}}github-releases{{else if (equals depNameCamel 'Checkov')}}pypi{{else if (equals depNameCamel 'Python')}}docker{{/if}}",
+      "depNameTemplate": "{{#if (equals depNameCamel 'Terraform')}}hashicorp/terraform{{else if (equals depNameCamel 'TFLint')}}terraform-linters/tflint{{else if (equals depNameCamel 'TerraformDocs')}}terraform-docs/terraform-docs{{else if (equals depNameCamel 'Checkov')}}checkov{{else if (equals depNameCamel 'Python')}}python{{/if}}"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  }
+}
