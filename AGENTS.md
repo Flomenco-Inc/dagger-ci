@@ -81,3 +81,13 @@ Semver-ish:
 
 Tag releases with `git tag v0.1.0 && git push --tags`. CI is expected to gate
 tag creation on a green build eventually — for now it's manual.
+
+## CodeRabbit Review Protocol
+
+When creating or reviewing PRs in this repo:
+
+1. **Monitor** — Wait for CodeRabbit to review (~1–5 min)
+2. **Fix Critical (🔴) and Major (🟠) immediately** — these block merge
+3. **File Minor/Nitpick as GitHub issues** — `gh issue create --label "coderabbit,tech-debt" --title "chore: <description>"`
+
+See [flo-docs AGENTS.md § CodeRabbit Review Protocol](https://github.com/Flomenco-Inc/flo-docs/blob/main/AGENTS.md#coderabbit-review-protocol-org-wide) for full details.
