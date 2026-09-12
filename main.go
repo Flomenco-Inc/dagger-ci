@@ -258,11 +258,13 @@ func (m *DaggerCi) terraformBase(
 				"rm /tmp/tf.zip && terraform version",
 			tfVersion,
 		)}).
-		// TFLint: official install script installs to /usr/local/bin.
+		// TFLint: pin via GitHub release zip. The former install_linux.sh on
+		// master was removed upstream; tagged releases still ship the binary.
 		WithExec([]string{"sh", "-c", fmt.Sprintf(
-			"set -eux; curl -fsSL "+
-				"https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | "+
-				"TFLINT_VERSION=%s bash && tflint --version",
+			"set -eux; curl -fsSLo /tmp/tflint.zip "+
+				"https://github.com/terraform-linters/tflint/releases/download/%[1]s/tflint_linux_amd64.zip && "+
+				"unzip -q /tmp/tflint.zip -d /usr/local/bin && "+
+				"rm /tmp/tflint.zip && chmod +x /usr/local/bin/tflint && tflint --version",
 			tflintVersion,
 		)}).
 		WithMountedDirectory("/src", src).
