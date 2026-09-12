@@ -29,6 +29,18 @@ code versions inside helper functions. DO NOT add a `versions.yaml` or
 `renovate-baserules.json`. The `const ( ... )` block is intentionally the
 simplest possible mechanism and should stay that way.
 
+
+## TFLint install
+
+Install TFLint from the **GitHub release zip** for the pinned
+`defaultTFLintVersion` (e.g. `v0.60.0`), same pattern as the Terraform zip.
+Do **not** pipe `raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh`
+— that script was removed from the default branch (2026-09) and 404s every
+consumer `terraform-verify` / `pre-commit` job.
+
+Consumers should pin `github.com/Flomenco-Inc/dagger-ci@v0.1.2` or later
+(immutable commit SHA is fine if the module prefers it).
+
 ## What NOT to do
 
 - **Do not add AWS credential handling here.** This module is CI-only
