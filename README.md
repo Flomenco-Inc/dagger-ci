@@ -19,7 +19,7 @@ and invocation flags live. Consumers call it in three lines:
 
 ```yaml
 - uses: dagger/dagger-for-github@v8
-- run: dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 \
+- run: dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.4 \
          terraform-verify --src=.
 ```
 
@@ -68,6 +68,7 @@ Defined as constants at the top of `main.go`:
 - TFLint: `v0.60.0`
 - terraform-docs: `v0.20.0`
 - Checkov: `3.2.490`
+- pre-commit: `4.6.2` (installed in its own venv, not the system interpreter)
 - Python: `3.12`
 
 To propose a bump, open a PR that edits the `const (...)` block. Renovate
@@ -80,7 +81,7 @@ Requires [Dagger CLI](https://docs.dagger.io/getting-started/installation/)
 
 ```bash
 # From a Terraform module repo:
-dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 \
+dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.4 \
   all --src=.
 ```
 
@@ -113,7 +114,7 @@ jobs:
       - uses: dagger/dagger-for-github@v8
         with:
           version: v0.21.10
-          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 terraform-verify --src=.
+          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.4 terraform-verify --src=.
   pre-commit:
     name: pre-commit
     runs-on: ubuntu-latest
@@ -122,7 +123,7 @@ jobs:
       - uses: dagger/dagger-for-github@v8
         with:
           version: v0.21.10
-          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 pre-commit --src=.
+          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.4 pre-commit --src=.
   checkov:
     name: Checkov
     runs-on: ubuntu-latest
@@ -131,7 +132,7 @@ jobs:
       - uses: dagger/dagger-for-github@v8
         with:
           version: v0.21.10
-          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 checkov --src=. export --path=./results_sarif.sarif
+          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.4 checkov --src=. export --path=./results_sarif.sarif
       - if: always() && hashFiles('results_sarif.sarif') != ''
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
