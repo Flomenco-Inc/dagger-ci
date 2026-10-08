@@ -19,7 +19,7 @@ and invocation flags live. Consumers call it in three lines:
 
 ```yaml
 - uses: dagger/dagger-for-github@v8
-- run: dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.0 \
+- run: dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 \
          terraform-verify --src=.
 ```
 
@@ -76,11 +76,11 @@ groups Dagger-module version bumps and surfaces upstream tool releases.
 ## Local usage
 
 Requires [Dagger CLI](https://docs.dagger.io/getting-started/installation/)
->= v0.20.6 and a running Docker/Podman daemon.
+>= v0.21.10 and a running Docker/Podman daemon.
 
 ```bash
 # From a Terraform module repo:
-dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.0 \
+dagger call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 \
   all --src=.
 ```
 
@@ -112,8 +112,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: dagger/dagger-for-github@v8
         with:
-          version: v0.20.6
-          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.0 terraform-verify --src=.
+          version: v0.21.10
+          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 terraform-verify --src=.
   pre-commit:
     name: pre-commit
     runs-on: ubuntu-latest
@@ -121,8 +121,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: dagger/dagger-for-github@v8
         with:
-          version: v0.20.6
-          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.0 pre-commit --src=.
+          version: v0.21.10
+          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 pre-commit --src=.
   checkov:
     name: Checkov
     runs-on: ubuntu-latest
@@ -130,8 +130,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: dagger/dagger-for-github@v8
         with:
-          version: v0.20.6
-          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.0 checkov --src=. export --path=./results_sarif.sarif
+          version: v0.21.10
+          call: call -m github.com/Flomenco-Inc/dagger-ci@v0.1.3 checkov --src=. export --path=./results_sarif.sarif
       - if: always() && hashFiles('results_sarif.sarif') != ''
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
