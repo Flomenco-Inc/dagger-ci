@@ -42,6 +42,7 @@ const (
 	defaultTFLintVersion       = "v0.60.0"
 	defaultTerraformDocsVersion = "v0.20.0"
 	defaultCheckovVersion      = "3.2.490"
+	defaultPreCommitVersion    = "4.6.2"
 	defaultPythonVersion       = "3.12"
 )
 
@@ -282,8 +283,18 @@ func (m *DaggerCi) preCommitBase(
 			"apt-get update && apt-get install -y --no-install-recommends " +
 			"python3 python3-pip python3-venv && " +
 			"rm -rf /var/lib/apt/lists/*"}).
-		WithExec([]string{"sh", "-c",
-			"python3 -m pip install --break-system-packages --no-cache-dir pre-commit"}).
+		// pre-commit lives in its own venv. Installing it into the system
+		// interpreter (--break-system-packages) breaks as soon as a
+		// dependency needs a newer version of a dpkg-managed package:
+		// virtualenv >= 21.14 requires packaging >= 26.3 and pip cannot
+		// uninstall Debian's python3-packaging (uninstall-no-record-file).
+		WithExec([]string{"sh", "-c", fmt.Sprintf(
+			"set -eux; python3 -m venv /opt/pre-commit && "+
+				"/opt/pre-commit/bin/pip install --no-cache-dir pre-commit==%[1]s && "+
+				"ln -s /opt/pre-commit/bin/pre-commit /usr/local/bin/pre-commit && "+
+				"pre-commit --version",
+			defaultPreCommitVersion,
+		)}).
 		WithExec([]string{"sh", "-c", fmt.Sprintf(
 			"set -eux; curl -fsSLo /tmp/td.tgz "+
 				"https://terraform-docs.io/dl/%[1]s/terraform-docs-%[1]s-linux-amd64.tar.gz && "+
