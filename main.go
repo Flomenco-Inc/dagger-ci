@@ -44,6 +44,13 @@ const (
 	defaultCheckovVersion      = "3.2.490"
 	defaultPreCommitVersion    = "4.6.2"
 	defaultPythonVersion       = "3.12"
+
+	// dockerLibrary is AWS's ECR Public mirror of Docker Official Images.
+	// Unqualified refs ("debian:stable-slim") resolve to docker.io, which
+	// GitHub-hosted runners pull anonymously; Docker Hub's rate limit failed
+	// every Dagger run on 2026-10-09 (Flomenco-Inc/flo#2544). Same images,
+	// same tags, same digests.
+	dockerLibrary = "public.ecr.aws/docker/library/"
 )
 
 // DaggerCi is the module's root object. All exported methods are callable as
@@ -178,7 +185,7 @@ func (m *DaggerCi) Checkov(
 	}
 
 	container := dag.Container().
-		From("python:"+defaultPythonVersion+"-slim").
+		From(dockerLibrary+"python:"+defaultPythonVersion+"-slim").
 		WithExec([]string{"pip", "install", "--no-cache-dir", "checkov==" + version}).
 		WithMountedDirectory("/src", src).
 		WithWorkdir("/src").
@@ -239,7 +246,7 @@ func (m *DaggerCi) All(
 // terraformBase returns a container with terraform + tflint + git installed
 // and the source directory mounted at /src (workdir).
 //
-// Base image is debian:stable-slim rather than alpine because HashiCorp's
+// Base image is debian:stable-slim (ECR Public mirror) rather than alpine because HashiCorp's
 // terraform binaries are glibc-linked. Alpine would require their musl
 // variant or a muscl wrapper — not worth the friction.
 func (m *DaggerCi) terraformBase(
@@ -247,7 +254,7 @@ func (m *DaggerCi) terraformBase(
 	tfVersion, tflintVersion string,
 ) *dagger.Container {
 	return dag.Container().
-		From("debian:stable-slim").
+		From(dockerLibrary+"debian:stable-slim").
 		WithExec([]string{"sh", "-c", "set -eux; " +
 			"apt-get update && apt-get install -y --no-install-recommends " +
 			"ca-certificates curl unzip git && rm -rf /var/lib/apt/lists/*"}).
