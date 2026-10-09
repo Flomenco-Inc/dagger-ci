@@ -53,6 +53,11 @@ Consumers should pin `github.com/Flomenco-Inc/dagger-ci@v0.1.2` or later
   `*Directory` parameter for a reason — the module must work on any Terraform
   source, not just flo's. If you find yourself writing `/src/terraform-aws-*`
   or similar, rewrite the function to take the narrowing path as an argument.
+- **Do not pull base images from Docker Hub.** Unqualified refs like
+  `debian:stable-slim` resolve to `docker.io`, which GitHub-hosted runners
+  pull anonymously; its rate limit failed every Dagger run on 2026-10-09
+  (flo#2544). Prefix Docker Official Images with `dockerLibrary`
+  (`public.ecr.aws/docker/library/`).
 - **Do not commit `internal/dagger/` or `dagger.gen.go`.** They are
   engine-version-specific generated output. `.gitignore` excludes them; keep
   it that way.
